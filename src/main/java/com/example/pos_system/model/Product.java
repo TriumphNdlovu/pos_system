@@ -10,24 +10,24 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
-    private String name;
+    private int product_id;
     private double price;
     private int quantity;
-    private int product_id;
-    private String product_size;
+    private String name;
     private String barcode;
+    private String product_size;
 
     public Product() {
     }
 
-    public Product(String name, double price, int quantity, int productid, String product_size, String barcode) {
-        this.name = name;
-        this.price = price;
-        this.quantity = quantity;
-        this.product_id = productid;
-        this.product_size = product_size;
-        this.barcode = barcode;
-    }
+   public Product(String name, double price, int quantity, String productSize, String barcode) {
+    this.name = name;
+    this.price = price;
+    this.quantity = quantity;
+    this.product_size = productSize;
+    this.barcode = barcode;
+}
+
     
     public String getName() {
         return name;
@@ -47,6 +47,10 @@ public class Product {
 
     public int getQuantity() {
         return quantity;
+    }
+
+    public String getProductSize(){
+        return product_size;
     }
 
     public void setQuantity(int quantity) {
