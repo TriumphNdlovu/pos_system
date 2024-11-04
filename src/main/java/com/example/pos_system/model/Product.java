@@ -1,68 +1,49 @@
 package com.example.pos_system.model;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long productId;
-    private String productName;
+    private Long id;
+
+    private String productname;
     private double price;
     private int quantity;
-    private String productSize;
 
-    // Getters and Setters
-    // Constructor
-
-    public Product() {
+    // Getters and setters
+    public Long getId() {
+        return id;
     }
 
-    public Product(Long productId, String productName, double price, int quantity, String productSize) {
-        this.productId = productId;
-        this.productName = productName;
-        this.price = price;
-        this.quantity = quantity;
-        this.productSize = productSize;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public Long getProductId() {
-        return productId;
+    public String getName() {
+        return productname;
     }
 
-    public void setProductId(Long productId) {
-        this.productId = productId;
+    public void setName(String name) {
+        this.productname = name;
     }
 
-    public String getProductName() {
-        return productName;
-    }
-
-    public double getProductPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public boolean isAvailable() {
-        return this.quantity > 0;
-    }
-    
-    public String getProductSize() {
-        return productSize;
+    public void setPrice(double price) {
+        this.price = price;
     }
 
-    public boolean decreaseQuantity(int quantity) {
-        if (this.quantity >= quantity) {
-            this.quantity -= quantity;
-            return true;
-        }
-        return false;
+    public int getQuantity() {
+        return quantity;
     }
-
-    public void increaseQuantity(int quantity) {
-        this.quantity += quantity;
-    }
-
 }
+
+
+
