@@ -3,14 +3,13 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.example.pos_system.model.Product;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -20,8 +19,9 @@ public class SalesRegisterFrame extends JPanel {
     private DefaultListModel<String> scannedProductsModel;
     private JTextField barcodeField;
     private JTextField quantityField;
-    private JLabel totalPriceLabel;
-    private List<Product> scannedProducts = new ArrayList<>();
+    private JLabel totalLabel;
+    private double totalPrice = 0.0;
+    private List<Product> scannedProductsList = new ArrayList<>(); // Stores scanned products for sale
 
     public SalesRegisterFrame() {
         setLayout(new BorderLayout(10, 10));
@@ -34,47 +34,55 @@ public class SalesRegisterFrame extends JPanel {
 
         // Input panel for barcode and quantity
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        inputPanel.add(new JLabel("Barcode:"));
         barcodeField = new JTextField(15);
+        inputPanel.add(new JLabel("Barcode:"));
         inputPanel.add(barcodeField);
-        
-        inputPanel.add(new JLabel("Quantity:"));
+
         quantityField = new JTextField("1", 3);
+        inputPanel.add(new JLabel("Quantity:"));
         inputPanel.add(quantityField);
 
         JButton scanButton = createStyledButton("Scan");
-        scanButton.addActionListener(new ScanButtonListener());
+        scanButton.addActionListener(e -> scanProduct());
         inputPanel.add(scanButton);
 
         add(inputPanel, BorderLayout.NORTH);
 
         // List of scanned products
         scannedProductsModel = new DefaultListModel<>();
-        JList<String> scannedProductsList = new JList<>(scannedProductsModel);
-        JScrollPane scrollPane = new JScrollPane(scannedProductsList);
+        JList<String> scannedProductsListUI = new JList<>(scannedProductsModel);
+        JScrollPane scrollPane = new JScrollPane(scannedProductsListUI);
         scrollPane.setPreferredSize(new Dimension(400, 200));
         add(scrollPane, BorderLayout.CENTER);
 
-        // Panel for total price and complete sale button
-        JPanel summaryPanel = new JPanel(new BorderLayout());
-        totalPriceLabel = new JLabel("Total Price: $0.00");
-        totalPriceLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        summaryPanel.add(totalPriceLabel, BorderLayout.WEST);
+        // Panel for total price display and Complete Sale button
+        JPanel bottomPanel = new JPanel(new BorderLayout(5, 5));
 
+        // Total price display
+        totalLabel = new JLabel("Total: $0.00");
+        totalLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        bottomPanel.add(totalLabel, BorderLayout.WEST);
+
+        // Complete Sale button
         JButton completeSaleButton = createStyledButton("Complete Sale");
-        completeSaleButton.addActionListener(new CompleteSaleButtonListener());
-        summaryPanel.add(completeSaleButton, BorderLayout.EAST);
+        completeSaleButton.addActionListener(e -> completeSale());
+        bottomPanel.add(completeSaleButton, BorderLayout.EAST);
 
-        add(summaryPanel, BorderLayout.SOUTH);
+        add(bottomPanel, BorderLayout.SOUTH);
+
+        // Key binding setup
+        setupKeyBindings();
 
         // Fetch products when the frame is initialized
         fetchProducts();
-        barcodeField.requestFocusInWindow();
+
+        // Request focus on barcode field when the panel is displayed
+        SwingUtilities.invokeLater(() -> barcodeField.requestFocusInWindow());
     }
 
     private void fetchProducts() {
         try {
-            String apiUrl = "http://localhost:8080/api/products"; // Adjust as needed
+            String apiUrl = "http://localhost:8080/api/products";
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create(apiUrl)).GET().build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -85,85 +93,111 @@ public class SalesRegisterFrame extends JPanel {
         }
     }
 
-    private class ScanButtonListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            String barcode = barcodeField.getText().trim();
-            int quantity;
+    private void scanProduct() {
+        String barcode = barcodeField.getText().trim();
+        int quantity;
 
-            try {
-                quantity = Integer.parseInt(quantityField.getText().trim());
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(SalesRegisterFrame.this, "Invalid quantity.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        try {
+            quantity = Integer.parseInt(quantityField.getText().trim());
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Invalid quantity.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
-            Product foundProduct = products.stream()
-                    .filter(product -> product.getBarcode().equals(barcode))
-                    .findFirst()
-                    .orElse(null);
+        Product foundProduct = products.stream()
+                .filter(product -> product.getBarcode().equals(barcode))
+                .findFirst()
+                .orElse(null);
 
-            if (foundProduct != null) {
-                scannedProducts.add(foundProduct);
-                double itemTotal = foundProduct.getPrice() * quantity;
-                String productInfo = String.format("%s - %s - $%.2f - Size: %s - Qty: %d",
-                        foundProduct.getBarcode(), foundProduct.getName(), foundProduct.getPrice(), foundProduct.getProductSize(), quantity);
-                scannedProductsModel.addElement(productInfo);
-                updateTotalPrice();
-                barcodeField.setText("");
-                quantityField.setText("1");
-                barcodeField.requestFocusInWindow();
+        if (foundProduct != null) {
+            double itemTotal = foundProduct.getPrice() * quantity;
+            totalPrice += itemTotal;
+
+            Product scannedProduct = new Product(foundProduct.getName(), foundProduct.getPrice(), quantity, foundProduct.getProductSize(), foundProduct.getBarcode());
+            scannedProductsList.add(scannedProduct);
+
+            String productInfo = String.format("%s - %s - $%.2f - Size: %s - Qty: %d",
+                    foundProduct.getBarcode(), foundProduct.getName(), foundProduct.getPrice(), foundProduct.getProductSize(), quantity);
+            scannedProductsModel.addElement(productInfo);
+            totalLabel.setText(String.format("Total: $%.2f", totalPrice));
+
+            barcodeField.setText("");
+            quantityField.setText("1");
+            barcodeField.requestFocusInWindow();
+        } else {
+            JOptionPane.showMessageDialog(this, "Product not found.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void completeSale() {
+        try {
+            String apiUrl = "http://localhost:8080/api/sale";
+            HttpClient client = HttpClient.newHttpClient();
+            Gson gson = new Gson();
+            String saleDataJson = gson.toJson(scannedProductsList);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(apiUrl))
+                    .POST(HttpRequest.BodyPublishers.ofString(saleDataJson))
+                    .header("Content-Type", "application/json")
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() == 200) {
+                JOptionPane.showMessageDialog(this, "Sale completed successfully!", "Sale", JOptionPane.INFORMATION_MESSAGE);
+                scannedProductsModel.clear();
+                totalPrice = 0.0;
+                totalLabel.setText("Total: $0.00");
+                scannedProductsList.clear();
             } else {
-                JOptionPane.showMessageDialog(SalesRegisterFrame.this, "Product not found.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Failed to complete sale.", "Error", JOptionPane.ERROR_MESSAGE);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "An error occurred while completing the sale.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private class CompleteSaleButtonListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            if (scannedProducts.isEmpty()) {
-                JOptionPane.showMessageDialog(SalesRegisterFrame.this, "No products to complete the sale.", "Warning", JOptionPane.WARNING_MESSAGE);
-                return;
+    private void setupKeyBindings() {
+        barcodeField.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "scanProduct");
+        barcodeField.getActionMap().put("scanProduct", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                scanProduct();
             }
+        });
 
-            try {
-                String apiUrl = "http://localhost:8080/api/sale"; // Replace with your actual endpoint
-                HttpClient client = HttpClient.newHttpClient();
-                HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(apiUrl))
-                        .header("Content-Type", "application/json")
-                        .POST(HttpRequest.BodyPublishers.ofString(new Gson().toJson(scannedProducts)))
-                        .build();
-                HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-                if (response.statusCode() == 200) {
-                    JOptionPane.showMessageDialog(SalesRegisterFrame.this, "Sale completed successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-                    scannedProductsModel.clear();
-                    scannedProducts.clear();
-                    totalPriceLabel.setText("Total Price: R0.00");
-                } else {
-                    JOptionPane.showMessageDialog(SalesRegisterFrame.this, "Failed to complete the sale.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(SalesRegisterFrame.this, "An error occurred while processing the sale.", "Error", JOptionPane.ERROR_MESSAGE);
+        barcodeField.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0), "focusQuantityField");
+        barcodeField.getActionMap().put("focusQuantityField", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                quantityField.requestFocusInWindow();
             }
-        }
-    }
+        });
 
-    private void updateTotalPrice() {
-        double total = scannedProducts.stream()
-                .mapToDouble(product -> product.getPrice() * Integer.parseInt(quantityField.getText().trim()))
-                .sum();
-        totalPriceLabel.setText(String.format("Total Price: $%.2f", total));
+        quantityField.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, KeyEvent.SHIFT_DOWN_MASK), "focusBarcodeField");
+        quantityField.getActionMap().put("focusBarcodeField", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                barcodeField.requestFocusInWindow();
+            }
+        });
+
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK), "completeSale");
+        getActionMap().put("completeSale", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                completeSale();
+            }
+        });
     }
 
     private JButton createStyledButton(String text) {
         JButton button = new JButton(text);
         button.setFont(new Font("Arial", Font.BOLD, 16));
         button.setForeground(Color.WHITE);
-        button.setBackground(new Color(60, 179, 113)); // Medium Sea Green color
+        button.setBackground(new Color(60, 179, 113));
         button.setFocusPainted(false);
         button.setBorderPainted(false);
         button.setOpaque(true);
@@ -171,3 +205,9 @@ public class SalesRegisterFrame extends JPanel {
         return button;
     }
 }
+
+
+
+// The Enter key is bound to trigger the scan action when the barcode field is focused.
+// Tab and Shift + Tab navigate between the barcode and quantity fields.
+// Ctrl + F triggers the "Complete Sale" action.
