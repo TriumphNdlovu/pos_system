@@ -13,12 +13,14 @@ public class PosSystemApplication {
         SpringApplication.run(PosSystemApplication.class, args);
 
         // Check if the environment is headless
-        if (GraphicsEnvironment.isHeadless()) {
-            System.err.println("Running in headless mode. GUI components will not be displayed.");
-            return; // Exit if running headless
-        }
+        // if (GraphicsEnvironment.isHeadless()) {
+        //     System.err.println("Running in headless mode. GUI components will not be displayed.");
+        //     return; // Exit if running headless
+        // }
 
         // Launch the Swing GUI on the Event Dispatch Thread
+
+System.setProperty("java.awt.headless", "false");
         SwingUtilities.invokeLater(() -> {
             try {
                 ProductFrame frame = new ProductFrame();

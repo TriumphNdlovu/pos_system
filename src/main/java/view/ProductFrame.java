@@ -60,10 +60,13 @@ public class ProductFrame extends JFrame {
         return gson.fromJson(response.body(), new TypeToken<List<Product>>() {}.getType());
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            ProductFrame frame = new ProductFrame();
-            frame.setVisible(true);
-        });
-    }
+    // public static void main(String[] args) {
+    //     SwingUtilities.invokeLater(() -> {
+    //         ProductFrame frame = new ProductFrame();
+    //         frame.setVisible(true);
+    //     });
+    // }
 }
+
+
+
