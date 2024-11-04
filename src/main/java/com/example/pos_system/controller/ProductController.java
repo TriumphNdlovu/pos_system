@@ -21,20 +21,20 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        Product product = productService.getProductById(id);
-        return product != null ? ResponseEntity.ok(product) : ResponseEntity.notFound().build();
-    }
+    // @GetMapping("/{id}")
+    // public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+    //     Product product = productService.getProductById(id);
+    //     return product != null ? ResponseEntity.ok(product) : ResponseEntity.notFound().build();
+    // }
 
-    @PostMapping
-    public Product createProduct(@RequestBody Product product) {
-        return productService.saveProduct(product);
-    }
+    // @PostMapping
+    // public Product createProduct(@RequestBody Product product) {
+    //     return productService.saveProduct(product);
+    // }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
-    }
+    // @DeleteMapping("/{id}")
+    // public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+    //     productService.deleteProduct(id);
+    //     return ResponseEntity.noContent().build();
+    // }
 }
