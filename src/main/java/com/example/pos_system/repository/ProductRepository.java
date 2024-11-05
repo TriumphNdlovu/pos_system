@@ -1,4 +1,4 @@
-package com.example.pos_system.model;
+package com.example.pos_system.repository;
 
 import com.example.pos_system.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -112,7 +112,7 @@ public class ProductFrame extends JPanel {
     }
 
     private List<Product> fetchProducts() throws Exception {
-        String apiUrl = "http://localhost:8080/api/products"; // Adjust as needed
+        String apiUrl = "http://localhost:8080/api/products"; 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(apiUrl)).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -122,7 +122,7 @@ public class ProductFrame extends JPanel {
     private void addProduct(Product product) {
         CompletableFuture<Product> future = CompletableFuture.supplyAsync(() -> {
             try {
-                String apiUrl = "http://localhost:8080/api/products"; // Adjust as needed
+                String apiUrl = "http://localhost:8080/api/products"; 
                 HttpClient client = HttpClient.newHttpClient();
                 HttpRequest request = HttpRequest.newBuilder()
                         .uri(URI.create(apiUrl))
@@ -220,7 +220,7 @@ private void showAddProductDialog() {
     // Add panels to the dialog
     dialog.add(formPanel, BorderLayout.CENTER);
     dialog.add(buttonPanel, BorderLayout.SOUTH);
-    dialog.pack(); // Call this to size the dialog based on its content
+    dialog.pack();
 
     dialog.setResizable(false);
     dialog.setVisible(true);

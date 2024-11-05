@@ -68,6 +68,14 @@ public class SalesRegisterFrame extends JPanel {
         completeSaleButton.addActionListener(e -> completeSale());
         bottomPanel.add(completeSaleButton, BorderLayout.EAST);
 
+        // Add navigation button to go back to the dashboard
+        JButton backButton = createStyledButton("Back to Dashboard");
+        backButton.addActionListener(e -> {
+            CardLayout cl = (CardLayout) getParent().getLayout();
+            cl.show(getParent(), "Dashboard");
+        });
+        bottomPanel.add(backButton, BorderLayout.CENTER);
+
         add(bottomPanel, BorderLayout.SOUTH);
 
         // Key binding setup
@@ -191,6 +199,16 @@ public class SalesRegisterFrame extends JPanel {
                 completeSale();
             }
         });
+
+        // Key binding to navigate back to the dashboard
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_DOWN_MASK), "goToDashboard");
+        getActionMap().put("goToDashboard", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CardLayout cl = (CardLayout) getParent().getLayout();
+                cl.show(getParent(), "Dashboard");
+            }
+        });
     }
 
     private JButton createStyledButton(String text) {
@@ -207,7 +225,7 @@ public class SalesRegisterFrame extends JPanel {
 }
 
 
-
 // The Enter key is bound to trigger the scan action when the barcode field is focused.
 // Tab and Shift + Tab navigate between the barcode and quantity fields.
 // Ctrl + F triggers the "Complete Sale" action.
+// Ctrl + D navigates back to the dashboard.

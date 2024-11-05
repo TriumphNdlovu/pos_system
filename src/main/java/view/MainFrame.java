@@ -12,10 +12,7 @@ import java.awt.Insets;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 
 public class MainFrame extends JFrame {
     private CardLayout cardLayout;
@@ -36,10 +33,12 @@ public class MainFrame extends JFrame {
         JPanel dashboardPanel = createDashboardPanel();
         JPanel inventoryPanel = new ProductFrame(); // Create ProductFrame directly here
         JPanel salesRegisterPanel = new SalesRegisterFrame();
+        JPanel loginPanel = new LoginPage();
 
         // Add panels to the cardPanel
+        cardPanel.add(loginPanel, "Login Page");
         cardPanel.add(dashboardPanel, "Dashboard");
-        cardPanel.add(inventoryPanel, "Inventory"); // Correctly added
+        cardPanel.add(inventoryPanel, "Inventory");
         cardPanel.add(salesRegisterPanel, "Sales Register");
 
         // Add cardPanel to the frame
@@ -69,21 +68,7 @@ public class MainFrame extends JFrame {
         return panel;
     }
 
-    private JPanel createSalesRegisterPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(230, 230, 250)); // Lavender background
 
-        JLabel label = new JLabel("Sales Register Page", SwingConstants.CENTER);
-        label.setFont(new Font("Serif", Font.BOLD, 24));
-        panel.add(label, BorderLayout.CENTER);
-
-        // Navigation button back to Dashboard
-        JButton backButton = createStyledButton("Back to Dashboard");
-        backButton.addActionListener(e -> cardLayout.show(cardPanel, "Dashboard"));
-        panel.add(backButton, BorderLayout.SOUTH);
-
-        return panel;
-    }
 
     // Method to create styled buttons
     private JButton createStyledButton(String text) {
@@ -99,10 +84,4 @@ public class MainFrame extends JFrame {
         return button;
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            MainFrame mainFrame = new MainFrame();
-            mainFrame.setVisible(true);
-        });
-    }
 }

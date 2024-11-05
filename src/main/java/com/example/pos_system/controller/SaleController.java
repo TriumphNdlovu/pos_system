@@ -2,7 +2,8 @@ package com.example.pos_system.controller;
 
 import com.example.pos_system.dto.SaleProductDTO;
 import com.example.pos_system.model.Product;
-import com.example.pos_system.model.ProductRepository;
+import com.example.pos_system.repository.ProductRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

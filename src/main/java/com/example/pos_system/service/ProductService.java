@@ -1,7 +1,8 @@
 package com.example.pos_system.service;
 
 import com.example.pos_system.model.Product;
-import com.example.pos_system.model.ProductRepository;
+import com.example.pos_system.repository.ProductRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
