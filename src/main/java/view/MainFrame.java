@@ -34,8 +34,10 @@ public class MainFrame extends JFrame {
         JPanel inventoryPanel = new ProductFrame(); // Create ProductFrame directly here
         JPanel salesRegisterPanel = new SalesRegisterFrame();
         JPanel loginPanel = new LoginPage();
+        JPanel registerPanel = new  RegisterPage();
 
         // Add panels to the cardPanel
+        cardPanel.add(registerPanel, "Register Page");
         cardPanel.add(loginPanel, "Login Page");
         cardPanel.add(dashboardPanel, "Dashboard");
         cardPanel.add(inventoryPanel, "Inventory");

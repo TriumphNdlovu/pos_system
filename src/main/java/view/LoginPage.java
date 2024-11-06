@@ -5,6 +5,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.awt.GridLayout;
+
+import java.net.HttpURLConnection;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.BufferedReader;
+import java.net.URL;
+
 public class LoginPage extends JPanel {
     private JTextField usernameField;
     private JPasswordField passwordField;
@@ -77,17 +85,67 @@ public class LoginPage extends JPanel {
     private class LoginButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String username = usernameField.getText().trim();
-            String password = new String(passwordField.getPassword());
-
-            // Basic authentication check
-            if (username.equals("admin") && password.equals("password")) { // Replace with real authentication logic
-                JOptionPane.showMessageDialog(LoginPage.this, "Login successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            // String username = usernameField.getText().trim();
+            // String password = new String(passwordField.getPassword());
+             if(handleLogin())
+            {
                 CardLayout cl = (CardLayout) getParent().getLayout();
                 cl.show(getParent(), "Dashboard"); // Navigate to the dashboard
-            } else {
-                JOptionPane.showMessageDialog(LoginPage.this, "Invalid username or password.", "Error", JOptionPane.ERROR_MESSAGE);
             }
+            // Basic authentication check
+            // if (username.equals("admin") && password.equals("password")) { // Replace with real authentication logic
+            //     JOptionPane.showMessageDialog(LoginPage.this, "Login successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            //     CardLayout cl = (CardLayout) getParent().getLayout();
+            //     cl.show(getParent(), "Dashboard"); // Navigate to the dashboard
+            // } else {
+            //     JOptionPane.showMessageDialog(LoginPage.this, "Invalid username or password.", "Error", JOptionPane.ERROR_MESSAGE);
+            // }
+        }
+    }
+
+     private boolean handleLogin() {
+        String username = usernameField.getText();
+        String password = new String(passwordField.getPassword());
+
+        if (!username.isEmpty() && !password.isEmpty()) {
+            // Logic to call the backend service
+            return sendLoginData(username, password);
+        } else {
+            JOptionPane.showMessageDialog(this, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    }
+
+    public boolean sendLoginData(String username, String password) {
+        try {
+            URL url = new URL("http://localhost:8080/users/login"); // API endpoint
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setDoOutput(true);
+
+            String jsonInputString = String.format("{\"username\": \"%s\", \"password\": \"%s\"}", 
+                                                    username, password);
+
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = jsonInputString.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
+
+            int responseCode = conn.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // If login is successful
+                JOptionPane.showMessageDialog(this, "Login successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                return true;
+            } else {
+                // If login failed
+                JOptionPane.showMessageDialog(this, "Invalid username or password.", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "An error occurred!", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
         }
     }
 
