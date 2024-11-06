@@ -90,6 +90,20 @@ public class LoginPage extends JPanel {
             }
         });
 
+        JButton exitButton = createStyledButton("Exit");
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        add(exitButton, gbc);
+        exitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+        
+
     }
 
     private class LoginButtonListener implements ActionListener {
