@@ -37,8 +37,8 @@ public class MainFrame extends JFrame {
         JPanel registerPanel = new  RegisterPage();
 
         // Add panels to the cardPanel
-        cardPanel.add(registerPanel, "Register Page");
         cardPanel.add(loginPanel, "Login Page");
+        cardPanel.add(registerPanel, "Register Page");
         cardPanel.add(dashboardPanel, "Dashboard");
         cardPanel.add(inventoryPanel, "Inventory");
         cardPanel.add(salesRegisterPanel, "Sales Register");
@@ -66,6 +66,11 @@ public class MainFrame extends JFrame {
         JButton salesRegisterButton = createStyledButton("Sales Register");
         salesRegisterButton.addActionListener(e -> cardLayout.show(cardPanel, "Sales Register"));
         panel.add(salesRegisterButton, gbc);
+
+        gbc.gridy++;
+        JButton logoutbButton = createStyledButton("Logout");
+        logoutbButton.addActionListener(e -> cardLayout.show(cardPanel, "Login Page"));
+        panel.add(logoutbButton, gbc);
 
         return panel;
     }

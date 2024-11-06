@@ -61,6 +61,16 @@ public class RegisterPage extends JPanel {
             }
         });
 
+        //Nav back to login page
+        JButton backButton = new JButton("Back to Login");
+        add(backButton);
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CardLayout cl = (CardLayout) getParent().getLayout();
+                cl.show(getParent(), "Login Page");
+            }
+        });
         setVisible(true);
     }
 

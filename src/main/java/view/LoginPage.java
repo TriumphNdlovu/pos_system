@@ -4,13 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import java.awt.GridLayout;
-
-import java.net.HttpURLConnection;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.BufferedReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class LoginPage extends JPanel {
@@ -80,35 +75,38 @@ public class LoginPage extends JPanel {
 
         // Button action listener
         loginButton.addActionListener(new LoginButtonListener());
+
+        JButton registerButton = createStyledButton("Register New Employee");
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        add(registerButton, gbc);
+        registerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CardLayout cl = (CardLayout) getParent().getLayout();
+                cl.show(getParent(), "Register Page"); 
+            }
+        });
+
     }
 
     private class LoginButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            // String username = usernameField.getText().trim();
-            // String password = new String(passwordField.getPassword());
-             if(handleLogin())
-            {
+            if (handleLogin()) {
                 CardLayout cl = (CardLayout) getParent().getLayout();
                 cl.show(getParent(), "Dashboard"); // Navigate to the dashboard
             }
-            // Basic authentication check
-            // if (username.equals("admin") && password.equals("password")) { // Replace with real authentication logic
-            //     JOptionPane.showMessageDialog(LoginPage.this, "Login successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
-            //     CardLayout cl = (CardLayout) getParent().getLayout();
-            //     cl.show(getParent(), "Dashboard"); // Navigate to the dashboard
-            // } else {
-            //     JOptionPane.showMessageDialog(LoginPage.this, "Invalid username or password.", "Error", JOptionPane.ERROR_MESSAGE);
-            // }
         }
     }
 
-     private boolean handleLogin() {
+    private boolean handleLogin() {
         String username = usernameField.getText();
         String password = new String(passwordField.getPassword());
 
         if (!username.isEmpty() && !password.isEmpty()) {
-            // Logic to call the backend service
             return sendLoginData(username, password);
         } else {
             JOptionPane.showMessageDialog(this, "Please fill in all fields.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -124,8 +122,7 @@ public class LoginPage extends JPanel {
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoOutput(true);
 
-            String jsonInputString = String.format("{\"username\": \"%s\", \"password\": \"%s\"}", 
-                                                    username, password);
+            String jsonInputString = String.format("{\"username\": \"%s\", \"password\": \"%s\"}", username, password);
 
             try (OutputStream os = conn.getOutputStream()) {
                 byte[] input = jsonInputString.getBytes("utf-8");
@@ -159,5 +156,20 @@ public class LoginPage extends JPanel {
         button.setOpaque(true);
         button.setPreferredSize(new Dimension(150, 40));
         return button;
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Login");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            CardLayout cardLayout = new CardLayout();
+            JPanel cardPanel = new JPanel(cardLayout);
+            LoginPage loginPage = new LoginPage();
+            cardPanel.add(loginPage, "Login Page");
+            
+            frame.add(cardPanel);
+            frame.setSize(500, 400);
+            frame.setVisible(true);
+        });
     }
 }
