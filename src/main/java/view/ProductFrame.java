@@ -94,20 +94,65 @@ public class ProductFrame extends JPanel {
     });
     buttonPanel.add(backButton);
 
+    JButton DeleteButton = createStyledButton("Delete Product");
+    DeleteButton.addActionListener(e -> {
+        int selectedRow = productTable.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a product to delete.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String barcode = (String) model.getValueAt(selectedRow, 0);
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this product?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            deleteProduct(barcode);
+        }
+    });
+    buttonPanel.add(DeleteButton);
+
+    // Add the button panel to the bottom
     add(buttonPanel, BorderLayout.SOUTH);
+
 }
 
 
-    private void loadProducts() {
-        try {
-            List<Product> products = fetchProducts();
+
+private void loadProducts() {
+    
+    try {
+        List<Product> products = fetchProducts();
             model.setRowCount(0); 
             for (Product product : products) {
-                model.addRow(new Object[]{product.getBarcode(), product.getName(), product.getPrice(), product.getQuantity()});
+                model.addRow(new Object[]{product.getBarcode(), product.getName(), product.getPrice(), product.getQuantity(), "Edit/Delete"});
+
             }
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Failed to load products.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private boolean deleteProduct(String barcode) {
+        try {
+            String apiUrl = "http://localhost:8080/api/products/" + barcode; 
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(apiUrl))
+                    .DELETE()
+                    .build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("Deleting product: " + response.body());
+            if(response.statusCode() != 200) {
+                JOptionPane.showMessageDialog(this, "Failed to delete product.", "Error", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+            loadProducts(); 
+            return true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Failed to delete product.", "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
         }
     }
 

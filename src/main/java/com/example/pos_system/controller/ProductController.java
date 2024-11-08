@@ -32,9 +32,13 @@ public class ProductController {
         return productService.saveProduct(product);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        productService.deleteProduct(id);
-        return ResponseEntity.noContent().build();
+    @DeleteMapping("/{barcode}")
+    public ResponseEntity<String> deleteProduct(@PathVariable String barcode) {
+        try {
+            productService.deleteProduct(barcode);
+            return ResponseEntity.noContent().build(); // Returns HTTP 204 on success
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Failed to delete product: " + e.getMessage());
+        }
     }
 }
