@@ -27,8 +27,11 @@ public class ProductService {
     }
 
     public void deleteProduct(String barcode) {
-    productRepository.deleteByBarcode(barcode);
+        Product product = productRepository.findByBarcode(barcode);
+        if (product != null) {
+            productRepository.deleteByBarcode(barcode);
+        } else {
+            throw new RuntimeException("Product with barcode " + barcode + " not found");
+        }
     }
-
-
 }

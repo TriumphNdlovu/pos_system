@@ -16,8 +16,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
   @Transactional
   @Modifying
   @Query("DELETE FROM Product p WHERE p.barcode = :barcode")
-  void deleteByBarcode(@Param("barcode") String barcode);  
-
-
+  void deleteByBarcode(@Param("barcode") String barcode);
 }
-

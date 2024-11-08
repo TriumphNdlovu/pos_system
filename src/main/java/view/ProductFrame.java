@@ -13,6 +13,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.jar.Attributes.Name;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -103,7 +104,7 @@ public class ProductFrame extends JPanel {
         }
 
         String barcode = (String) model.getValueAt(selectedRow, 0);
-        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this product?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete " + model.getValueAt(selectedRow, 1), "Confirm Deletion", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             deleteProduct(barcode);
         }
@@ -132,7 +133,7 @@ private void loadProducts() {
         }
     }
 
-    private boolean deleteProduct(String barcode) {
+    private void deleteProduct(String barcode) {
         try {
             String apiUrl = "http://localhost:8080/api/products/" + barcode; 
             HttpClient client = HttpClient.newHttpClient();
@@ -142,17 +143,12 @@ private void loadProducts() {
                     .build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             System.out.println("Deleting product: " + response.body());
-            if(response.statusCode() != 200) {
-                JOptionPane.showMessageDialog(this, "Failed to delete product.", "Error", JOptionPane.ERROR_MESSAGE);
-                return false;
-            }
+            
             loadProducts(); 
-            return true;
 
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Failed to delete product.", "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
         }
     }
 

@@ -38,7 +38,7 @@ public class ProductController {
             productService.deleteProduct(barcode);
             return ResponseEntity.noContent().build(); // Returns HTTP 204 on success
         } catch (Exception e) {
-            return ResponseEntity.status(500).body("Failed to delete product: " + e.getMessage());
+            return ResponseEntity.status(500).body("Failed to delete producttt: " + e.getMessage());
         }
     }
 }
