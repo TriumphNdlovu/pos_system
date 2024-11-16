@@ -52,9 +52,6 @@ Run the application using the following command:
 2. **Scan Products**: Use the barcode scanner to scan products and automatically add them to the sales cart.
 3. **Complete Sale**: Once all products are added, click the "Complete Sale" button to finalize the transaction.
 
-## License
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for more details.
-
 ---
 
 **Enjoy using the POS System!** 🚀
