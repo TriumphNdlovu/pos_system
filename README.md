@@ -25,7 +25,7 @@ Clone the repository to your local machine using the command below:
 
 ```
 
-git clone https://github.com/TriumphNdlovu/pos-system.git
+git clone https://github.com/TriumphNdlovu/pos_system.git
 
 ```
 
@@ -59,5 +59,5 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 
 **Enjoy using the POS System!** 🚀
 
-For any issues or contributions, feel free to raise an issue or submit a pull request on [GitHub](https://github.com/TriumphNdlovu/pos-system) or you can just contact me
+For any issues or contributions, feel free to raise an issue or submit a pull request on [GitHub](https://github.com/TriumphNdlovu/pos_system) or you can just contact me
 
